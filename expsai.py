@@ -281,3 +281,101 @@ def main():
 if __name__ == "__main__":
     main()
 
+% Facts for male
+male(jerome).
+male(victor).
+male(austin).
+male(bryn).
+male(sconny).
+male(ryan).
+male(tom).
+
+% Facts for female
+female(philomena).
+female(loretta).
+female(noella).
+female(taylor).
+female(araina).
+
+% Facts for mother
+mother(philomena, austin).
+mother(philomena, taylor).
+mother(philomena, bryn).
+mother(loretta, sconny).
+mother(sconny, ryan).
+mother(sconny, tom).
+mother(noella, araina).
+
+% Facts for father
+father(jerome, austin).
+father(jerome, taylor).
+father(jerome, bryn).
+father(victor, sconny).
+father(austin, ryan).
+father(austin, tom).
+father(bryn, araina).
+
+% Parent rule
+parent(X, Y) :- mother(X, Y).
+parent(X, Y) :- father(X, Y).
+
+% Siblings rule
+siblings(X, Y) :- 
+    parent(P, X),
+    parent(P, Y),
+    X \= Y.
+
+% Brother rule
+brother(X, Y) :- 
+    male(X),  % X must be male
+    siblings(X, Y).
+
+% Sister rule
+sister(X, Y) :- 
+    female(X),  % X must be female
+    siblings(X, Y).
+
+% Uncle rule
+uncle(X, Y) :- 
+    male(X),            % X must be male
+    parent(P, Y),       % P is Y's parent
+    siblings(X, P).     % X is sibling of P
+
+uncle(X, Y) :-          % Uncle by marriage (parent's sibling's husband)
+    parent(P, Y),       % P is Y's parent
+    siblings(A, P),     % A is sibling of P
+    married(X, A),      % X is married to A
+    male(X).            % Ensure X is male
+
+% Aunt rule
+aunt(X, Y) :- 
+    parent(P, Y),  % P is Y's parent
+    siblings(X, P), % X is P's sibling
+    female(X).  % X is female
+aunt(X, Y) :-     % Aunt by marriage (any parent's sibling's wife)
+    married(U, X), % X is married to U
+    parent(P, Y),  % P is Y's parent
+    siblings(U, P). % U is sibling of P
+
+% Grandfather rule
+grandfather(X, Y) :- 
+    father(X, P),
+    parent(P, Y).
+
+% Grandmother rule
+grandmother(X, Y) :- 
+    mother(X, P),
+    parent(P, Y).
+
+% Cousins rule
+cousins(X, Y) :- 
+    parent(P1, X),
+    parent(P2, Y),
+    siblings(P1, P2),
+    X \= Y.
+
+% Married rule
+married(jerome, philomena).
+married(victor, loretta).
+married(austin, sconny).
+married(bryn, noella).
